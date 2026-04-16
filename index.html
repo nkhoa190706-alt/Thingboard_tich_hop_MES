@@ -29,7 +29,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        // Thành phần biểu tượng SVG nội bộ (Không phụ thuộc thư viện ngoài)
+        // Thành phần biểu tượng SVG nội bộ
         const Icon = ({ name, size = 20, className = "" }) => {
             const icons = {
                 dashboard: <path d="M3 3h7v9H3V3zm11 0h7v5h-7V3zm0 9h7v9h-7v-9zM3 16h7v5H3v-5z"/>,
@@ -40,10 +40,10 @@
                 alert: <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01"/>,
                 check: <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/>,
                 settings: (
-                    <>
+                    <React.Fragment>
                         <circle cx="12" cy="12" r="3"/>
                         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </>
+                    </React.Fragment>
                 )
             };
             return (
@@ -57,13 +57,9 @@
             const [activeTab, setActiveTab] = React.useState('dashboard');
             const [isConfigOpen, setIsConfigOpen] = React.useState(false);
             
-            // Xử lý LocalStorage an toàn
             const getSafeStorage = (key, fallback) => {
-                try {
-                    return localStorage.getItem(key) || fallback;
-                } catch (e) {
-                    return fallback;
-                }
+                try { return localStorage.getItem(key) || fallback; } 
+                catch (e) { return fallback; }
             };
 
             const [config, setConfig] = React.useState({
@@ -72,11 +68,7 @@
             });
 
             const [telemetry, setTelemetry] = React.useState({
-                temp: 0,
-                progress: 0,
-                power: 0,
-                oee: 0,
-                status: 'offline'
+                temp: 0, progress: 0, power: 0, oee: 0, status: 'offline'
             });
 
             const saveConfig = () => {
@@ -84,7 +76,7 @@
                     localStorage.setItem('tb_host', config.host);
                     localStorage.setItem('tb_token', config.token);
                 } catch (e) {
-                    console.error("Không thể lưu cấu hình vào trình duyệt.");
+                    console.error("Lỗi lưu cấu hình");
                 }
                 setIsConfigOpen(false);
                 fetchData();
@@ -92,7 +84,6 @@
 
             const fetchData = React.useCallback(async () => {
                 if (!config.token) return;
-                // Giả lập cập nhật để demo khi chưa kết nối thật
                 setTelemetry(prev => ({
                     ...prev,
                     temp: 200 + Math.random() * 20,
@@ -108,7 +99,7 @@
             }, [fetchData]);
 
             const renderDashboard = () => (
-                <div className="space-y-8">
+                <div className="space-y-8 animate-in fade-in duration-500">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
                             <div className="flex justify-between items-center mb-4">
@@ -191,6 +182,7 @@
             );
         };
 
+        // Bỏ đoạn chờ DOMContentLoaded, gọi trực tiếp luôn để chạy liền
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
